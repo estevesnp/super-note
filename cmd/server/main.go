@@ -30,7 +30,10 @@ func main() {
 	defer conn.Close(ctx)
 
 	serverAddr := fmt.Sprintf("%s:%s", os.Getenv("SERVER_HOST"), os.Getenv("SERVER_PORT"))
-	server := api.New(ctx, conn, serverAddr)
+	server := api.New(ctx, conn, api.Config{
+		Addr:      serverAddr,
+		SecretKey: os.Getenv("SERVER_SECRET"),
+	})
 
 	if err := server.Listen(); err != nil {
 		log.Fatalf("error starting server: %v", err)

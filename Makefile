@@ -60,6 +60,11 @@ tidy:
 ## build: build the application
 .PHONY: build
 build:
+	go build -o=/tmp/bin/${binary_name} ${main_package_path}
+
+## build/full: genereate sqlc and build the application 
+.PHONY: build/full
+build/full:
 	sqlc generate
 	go build -o=/tmp/bin/${binary_name} ${main_package_path}
 
@@ -77,27 +82,27 @@ run/live:
 		--build.include_ext "go, tpl, tmpl, html, css, scss, js, ts, sql, jpeg, jpg, gif, png, bmp, svg, webp, ico" \
 		--misc.clean_on_exit "true"
 
-## db-create: create db container
-.PHONY: db-create
-db-create:
+## db/create: create db container
+.PHONY: db/create
+db/create:
 	docker create --name note-psql \
 		-e POSTGRES_PASSWORD=password \
 		-e POSTGRES_DB=note \
 		-p 5432:5432 postgres:16
 
-## db-rm: remove db container
-.PHONY: db-rm
-db-rm:
+## db/rm: remove db container
+.PHONY: db/rm
+db/rm:
 	docker rm note-psql
 
-## db-up: start up db
-.PHONY: db-up
-db-up:
+## db/up: start up db
+.PHONY: db/up
+db/up:
 	docker start note-psql
 
-## db-down: stop db
-.PHONY: db-down
-db-down:
+## db/down: stop db
+.PHONY: db/down
+db/down:
 	docker stop note-psql
 
 

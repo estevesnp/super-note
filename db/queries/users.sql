@@ -6,6 +6,11 @@ SELECT id, username, created_at FROM users
 WHERE id = $1
 LIMIT 1;
 
+-- name: GetUserByUsername :one
+SELECT id, username, password, created_at FROM users
+WHERE username = $1
+LIMIT 1;
+
 -- name: GetUserByCreds :one
 SELECT id, username, created_at FROM users
 WHERE username = $1
