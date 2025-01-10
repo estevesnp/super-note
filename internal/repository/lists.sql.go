@@ -21,16 +21,16 @@ RETURNING id, user_id, name, description
 `
 
 type CreateListParams struct {
-	UserID      uuid.UUID
-	Name        string
-	Description pgtype.Text
+	UserID      uuid.UUID   `json:"user_id"`
+	Name        string      `json:"name"`
+	Description pgtype.Text `json:"description"`
 }
 
 type CreateListRow struct {
-	ID          uuid.UUID
-	UserID      uuid.UUID
-	Name        string
-	Description pgtype.Text
+	ID          uuid.UUID   `json:"id"`
+	UserID      uuid.UUID   `json:"user_id"`
+	Name        string      `json:"name"`
+	Description pgtype.Text `json:"description"`
 }
 
 func (q *Queries) CreateList(ctx context.Context, arg CreateListParams) (CreateListRow, error) {

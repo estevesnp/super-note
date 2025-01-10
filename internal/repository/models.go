@@ -12,27 +12,27 @@ import (
 )
 
 type List struct {
-	ID          uuid.UUID
-	UserID      uuid.UUID
-	Name        string
-	Description pgtype.Text
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
+	ID          uuid.UUID   `json:"id"`
+	UserID      uuid.UUID   `json:"user_id"`
+	Name        string      `json:"name"`
+	Description pgtype.Text `json:"description"`
+	CreatedAt   time.Time   `json:"created_at"`
+	UpdatedAt   time.Time   `json:"updated_at"`
 }
 
 type Task struct {
-	ID          uuid.UUID
-	ListID      uuid.UUID
-	Name        string
-	Description pgtype.Text
-	Completed   bool
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
+	ID          uuid.UUID   `json:"id"`
+	ListID      uuid.UUID   `json:"list_id"`
+	Name        string      `json:"name"`
+	Description pgtype.Text `json:"description"`
+	Completed   bool        `json:"completed"`
+	CreatedAt   time.Time   `json:"created_at"`
+	UpdatedAt   time.Time   `json:"updated_at"`
 }
 
 type User struct {
-	ID        uuid.UUID
-	Username  string
-	Password  string
-	CreatedAt time.Time
+	ID        uuid.UUID `json:"id"`
+	Username  string    `json:"username"`
+	Password  string    `json:"password"`
+	CreatedAt time.Time `json:"created_at"`
 }

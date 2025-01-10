@@ -66,7 +66,7 @@ func (q *Queries) GetTasksByList(ctx context.Context, listID uuid.UUID) ([]Task,
 }
 
 const getTasksByUser = `-- name: GetTasksByUser :many
-SELECT t.id, t.list_id, t.name, t.description, t.completed, t.created_at, t.updated_at 
+SELECT t.id, t.list_id, t.name, t.description, t.completed, t.created_at, t.updated_at
 FROM tasks t
 INNER JOIN lists l ON t.list_id = l.id
 INNER JOIN users u ON l.user_id = u.id

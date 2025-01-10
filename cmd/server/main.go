@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"super-note/internal/repository"
+	"super-note/internal/api"
 
 	"github.com/jackc/pgx/v5"
 	_ "github.com/joho/godotenv/autoload"
@@ -25,18 +25,14 @@ func main() {
 
 	conn, err := pgx.Connect(ctx, connStr)
 	if err != nil {
-		log.Fatalf("failed to connect to db: %v", err)
+		log.Fatalf("error connecting to db: %v", err)
 	}
 	defer conn.Close(ctx)
 
-	repo := repository.New(conn)
+	serverAddr := fmt.Sprintf("%s:%s", os.Getenv("SERVER_HOST"), os.Getenv("SERVER_PORT"))
+	server := api.New(ctx, conn, serverAddr)
 
-	users, err := repo.GetAllUsers(ctx)
-	if err != nil {
-		log.Fatalf("failed to fetch users: %v", err)
-	}
-
-	for _, user := range users {
-		fmt.Printf("id: %s; username: %s; created_at: %s\n", user.ID, user.Username, user.CreatedAt)
+	if err := server.Listen(); err != nil {
+		log.Fatalf("error starting server: %v", err)
 	}
 }

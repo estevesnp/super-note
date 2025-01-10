@@ -21,14 +21,14 @@ RETURNING id, username, created_at
 `
 
 type CreateUserParams struct {
-	Username string
-	Password string
+	Username string `json:"username"`
+	Password string `json:"password"`
 }
 
 type CreateUserRow struct {
-	ID        uuid.UUID
-	Username  string
-	CreatedAt time.Time
+	ID        uuid.UUID `json:"id"`
+	Username  string    `json:"username"`
+	CreatedAt time.Time `json:"created_at"`
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (CreateUserRow, error) {
@@ -43,9 +43,9 @@ SELECT id, username, created_at FROM users
 `
 
 type GetAllUsersRow struct {
-	ID        uuid.UUID
-	Username  string
-	CreatedAt time.Time
+	ID        uuid.UUID `json:"id"`
+	Username  string    `json:"username"`
+	CreatedAt time.Time `json:"created_at"`
 }
 
 func (q *Queries) GetAllUsers(ctx context.Context) ([]GetAllUsersRow, error) {
@@ -76,14 +76,14 @@ LIMIT 1
 `
 
 type GetUserByCredsParams struct {
-	Username string
-	Password string
+	Username string `json:"username"`
+	Password string `json:"password"`
 }
 
 type GetUserByCredsRow struct {
-	ID        uuid.UUID
-	Username  string
-	CreatedAt time.Time
+	ID        uuid.UUID `json:"id"`
+	Username  string    `json:"username"`
+	CreatedAt time.Time `json:"created_at"`
 }
 
 func (q *Queries) GetUserByCreds(ctx context.Context, arg GetUserByCredsParams) (GetUserByCredsRow, error) {
@@ -100,9 +100,9 @@ LIMIT 1
 `
 
 type GetUserByIdRow struct {
-	ID        uuid.UUID
-	Username  string
-	CreatedAt time.Time
+	ID        uuid.UUID `json:"id"`
+	Username  string    `json:"username"`
+	CreatedAt time.Time `json:"created_at"`
 }
 
 func (q *Queries) GetUserById(ctx context.Context, id uuid.UUID) (GetUserByIdRow, error) {
