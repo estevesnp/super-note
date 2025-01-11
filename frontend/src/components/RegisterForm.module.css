@@ -1,0 +1,9 @@
+.form_input {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.form_input input {
+  max-width: 200px;
+}

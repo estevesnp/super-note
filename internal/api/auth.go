@@ -76,6 +76,7 @@ func (s *Server) AuthMiddleware(c *gin.Context) {
 	c.Next()
 }
 
+// TODO - should we create and send a JWT here?
 func (s *Server) registerHandler(c *gin.Context) {
 	repo := repository.New(s.db)
 

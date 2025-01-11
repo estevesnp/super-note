@@ -8,37 +8,47 @@ import (
 	"net/http"
 	"super-note/internal/repository"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5"
 )
 
 type Server struct {
-	ctx     context.Context
-	addr    string
-	secret  string
-	handler *gin.Engine
-	db      *pgx.Conn
+	ctx            context.Context
+	addr           string
+	secret         string
+	trustedProxies string
+	allowOrigins   string
+	router         *gin.Engine
+
+	db *pgx.Conn
 }
 
 type Config struct {
-	Addr      string
-	SecretKey string
+	Addr           string
+	SecretKey      string
+	TrustedProxies string
+	AllowOrigins   string
 }
 
 func New(ctx context.Context, db *pgx.Conn, cfg Config) *Server {
 	if err := validateConfig(cfg); err != nil {
-		panic(err)
+		log.Fatalf("error validating config: %v", err)
 	}
 
 	server := &Server{
-		ctx:     ctx,
-		addr:    cfg.Addr,
-		secret:  cfg.SecretKey,
-		handler: gin.Default(),
-		db:      db,
+		ctx:            ctx,
+		addr:           cfg.Addr,
+		secret:         cfg.SecretKey,
+		trustedProxies: cfg.TrustedProxies,
+		allowOrigins:   cfg.AllowOrigins,
+		router:         gin.Default(),
+		db:             db,
 	}
 
-	server.setupEndpoints()
+	if err := server.setupEndpoints(); err != nil {
+		log.Fatalf("error setting up endpoints: %v", err)
+	}
 
 	return server
 }
@@ -52,6 +62,14 @@ func validateConfig(cfg Config) error {
 		return errors.New("no secret key set")
 	}
 
+	if cfg.TrustedProxies == "" {
+		return errors.New("no trusted proxies set")
+	}
+
+	if cfg.AllowOrigins == "" {
+		return errors.New("no allowed origins set")
+	}
+
 	return nil
 }
 
@@ -63,28 +81,40 @@ var (
 )
 
 func (s *Server) Listen() error {
-	return s.handler.Run(s.addr)
+	return s.router.Run(s.addr)
 }
 
-func (s *Server) setupEndpoints() {
-	s.handler.GET("/", func(c *gin.Context) {
+func (s *Server) setupEndpoints() error {
+	if err := s.router.SetTrustedProxies([]string{s.trustedProxies}); err != nil {
+		return err
+	}
+
+	s.router.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{s.allowOrigins},
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization"},
+		AllowCredentials: true,
+	}))
+
+	s.router.GET("/", func(c *gin.Context) {
 		fmt.Fprint(c.Writer, "Hello, World!\n")
 	})
 
-	protected := s.handler.Group("/secret")
+	protected := s.router.Group("/secret")
 	protected.Use(s.AuthMiddleware)
 	{
 		protected.GET("/", func(c *gin.Context) {
 			user := c.GetString("username")
-
 			c.JSON(http.StatusOK, gin.H{"message": fmt.Sprintf("Hello, %s!\n", user)})
 		})
 	}
 
-	s.handler.POST("/login", s.loginHandler)
-	s.handler.POST("/register", s.registerHandler)
+	s.router.POST("/login", s.loginHandler)
+	s.router.POST("/register", s.registerHandler)
 
-	s.handler.GET("/users", s.getUsersHandler)
+	s.router.GET("/users", s.getUsersHandler)
+
+	return nil
 }
 
 func (s *Server) getUsersHandler(c *gin.Context) {

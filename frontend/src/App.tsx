@@ -1,5 +1,4 @@
 import type { JSX } from "solid-js";
-
 import styles from "./App.module.css";
 
 type AppProps = {
@@ -9,9 +8,13 @@ type AppProps = {
 function App({ children }: AppProps) {
   return (
     <>
-      <header class={styles.header}>header</header>
+      <header class={styles.header}>
+        <span>Super Note</span>
+        <a href="/">Home</a>
+        <a href="/register">Register</a>
+      </header>
+
       {children}
-      <footer class={styles.footer}>footer</footer>
     </>
   );
 }

@@ -31,8 +31,10 @@ func main() {
 
 	serverAddr := fmt.Sprintf("%s:%s", os.Getenv("SERVER_HOST"), os.Getenv("SERVER_PORT"))
 	server := api.New(ctx, conn, api.Config{
-		Addr:      serverAddr,
-		SecretKey: os.Getenv("SERVER_SECRET"),
+		Addr:           serverAddr,
+		SecretKey:      os.Getenv("SERVER_SECRET"),
+		TrustedProxies: os.Getenv("SERVER_TRUSTED_PROXIES"),
+		AllowOrigins:   os.Getenv("SERVER_ALLOW_ORIGINS"),
 	})
 
 	if err := server.Listen(); err != nil {
