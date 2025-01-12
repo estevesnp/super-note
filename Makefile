@@ -68,7 +68,7 @@ build/gen:
 	sqlc generate
 	go build -o=/tmp/bin/${binary_name} ${main_package_path}
 
-## run: run the  application
+## run: run the application
 .PHONY: run
 run: build
 	/tmp/bin/${binary_name}
@@ -81,6 +81,11 @@ run/live:
 		--build.exclude_dir "frontend" \
 		--build.include_ext "go, tpl, tmpl, html, css, scss, js, ts, sql, jpeg, jpg, gif, png, bmp, svg, webp, ico" \
 		--misc.clean_on_exit "true"
+
+## run/fe: run frontend
+.PHONY: run/fe
+run/fe:
+	cd ./frontend/ && npm run dev
 
 ## db/create: create db container
 .PHONY: db/create

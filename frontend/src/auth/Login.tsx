@@ -2,10 +2,14 @@ import { useNavigate } from "@solidjs/router";
 import { loginUser } from "../api/endpoints";
 import LoginForm from "./components/LoginForm";
 import { UserCreds } from "./types";
-import { login } from "./authStore";
+import { isLoggedIn, login } from "./authStore";
 
 export default function Login() {
   const navigate = useNavigate();
+
+  if (isLoggedIn()) {
+    navigate("/");
+  }
 
   function handleLogin(creds: UserCreds) {
     loginUser(creds)

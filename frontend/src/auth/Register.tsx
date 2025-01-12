@@ -2,10 +2,14 @@ import { useNavigate } from "@solidjs/router";
 import RegisterForm from "./components/RegisterForm";
 import { UserCreds } from "./types";
 import { registerUser } from "../api/endpoints";
-import { login } from "./authStore";
+import { isLoggedIn, login } from "./authStore";
 
 export default function Register() {
   const navigate = useNavigate();
+
+  if (isLoggedIn()) {
+    navigate("/");
+  }
 
   function handleRegister(creds: UserCreds): void {
     registerUser(creds)
