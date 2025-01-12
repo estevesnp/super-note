@@ -34,7 +34,7 @@ It also provides authentication using [JWTs](https://jwt.io/).
 
 ### Backend
 
-- Create a `.env` file in the project's root with the same schema as '.env.sample'
+- Create a `.env` file in the project's root with the same schema as `.env.sample`
 - Configure your `.env` with the propper values
 - Build with `go build -o super-note ./cmd/server`
 - Run it with `./super-note`
@@ -42,13 +42,14 @@ It also provides authentication using [JWTs](https://jwt.io/).
 ### Frontend
 
 - `cd frontend`
-- Create a `.env` file  with the same schema as '.env.sample'
+- Create a `.env` file  with the same schema as `.env.sample`
 - Configure your `.env` with the propper values
 - Build with `npm run build`
 - Run it with `npm run serve`
 
 ## TODO
 
+- add Dockerfiles
 - add tests
 - add css
 - add, remove, change, display lists and tasks
