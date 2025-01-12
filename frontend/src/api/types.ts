@@ -3,3 +3,7 @@ export type User = {
   username: string;
   created_at: string;
 };
+
+export type JWT = {
+  jwt: string;
+};

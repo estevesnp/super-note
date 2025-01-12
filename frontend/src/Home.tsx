@@ -2,8 +2,9 @@ import { createSignal, For } from "solid-js";
 import { getUsers } from "./api/endpoints";
 import { User } from "./api/types";
 import styles from "./Home.module.css";
+import { user } from "./auth/authStore";
 
-function Home() {
+export default function Home() {
   const [users, setUsers] = createSignal<Array<User>>([]);
 
   getUsers()
@@ -12,6 +13,7 @@ function Home() {
 
   return (
     <>
+      <h1>Welcome{user() ? `, ${user()?.username}!!` : "!"}</h1>
       <div id="users">
         <For each={users()}>
           {(user) => (
@@ -26,5 +28,3 @@ function Home() {
     </>
   );
 }
-
-export default Home;

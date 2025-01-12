@@ -1,17 +1,21 @@
 import { useNavigate } from "@solidjs/router";
-import RegisterForm from "../components/RegisterForm";
+import RegisterForm from "./components/RegisterForm";
 import { UserCreds } from "./types";
 import { registerUser } from "../api/endpoints";
+import { login } from "./authStore";
 
-function Register() {
+export default function Register() {
   const navigate = useNavigate();
 
-  function handlerRegister(user: UserCreds): void {
-    registerUser(user)
-      .then(() => navigate("/"))
+  function handleRegister(creds: UserCreds): void {
+    registerUser(creds)
+      .then((token) => {
+        login(token.jwt);
+        navigate("/");
+      })
       .catch((e: Error) => {
-        if (e.message === "User already exists") {
-          alert(e.message);
+        if (e.message === "user already exists") {
+          alert(`Username ${creds.username} already exists`);
         } else {
           console.error(e.message);
         }
@@ -21,9 +25,7 @@ function Register() {
   return (
     <>
       <h1>Register</h1>
-      <RegisterForm handleRegister={handlerRegister} />
+      <RegisterForm handleRegister={handleRegister} />
     </>
   );
 }
-
-export default Register;

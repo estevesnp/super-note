@@ -16,7 +16,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-const tokenExpire = 24 * time.Second
+const tokenExpire = 24 * time.Hour
 
 type UserRequest struct {
 	Username string `json:"username"`
@@ -30,14 +30,18 @@ type UserClaim struct {
 	jwt.RegisteredClaims
 }
 
+type Token struct {
+	Jwt string `json:"jwt"`
+}
+
 type LoggedInUser struct {
-	Id       uuid.UUID `json:"id"`
+	ID       uuid.UUID `json:"id"`
 	Username string    `json:"username"`
 }
 
 func generateJWT(secret string, user LoggedInUser) (string, error) {
 	claim := UserClaim{
-		UserID:   user.Id,
+		UserID:   user.ID,
 		Username: user.Username,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(tokenExpire)),
@@ -76,14 +80,13 @@ func (s *Server) AuthMiddleware(c *gin.Context) {
 	c.Next()
 }
 
-// TODO - should we create and send a JWT here?
 func (s *Server) registerHandler(c *gin.Context) {
 	repo := repository.New(s.db)
 
 	var req UserRequest
 
 	if err := c.BindJSON(&req); err != nil {
-		log.Println(err)
+		log.Printf("error parsing request: %v", err)
 		c.JSON(http.StatusBadRequest, badRequest)
 		return
 	}
@@ -106,12 +109,22 @@ func (s *Server) registerHandler(c *gin.Context) {
 			log.Printf("error creating user: %v", err)
 			c.JSON(http.StatusInternalServerError, internalServerError)
 		} else {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "User already exists"})
+			c.JSON(http.StatusBadRequest, gin.H{"error": "user already exists"})
 		}
 		return
 	}
 
-	c.JSON(http.StatusCreated, user)
+	token, err := generateJWT(s.secret, LoggedInUser{
+		ID:       user.ID,
+		Username: user.Username,
+	})
+	if err != nil {
+		log.Printf("error generating jwt: %v", err)
+		c.JSON(http.StatusInternalServerError, internalServerError)
+		return
+	}
+
+	c.JSON(http.StatusCreated, Token{token})
 }
 
 func (s *Server) loginHandler(c *gin.Context) {
@@ -119,7 +132,7 @@ func (s *Server) loginHandler(c *gin.Context) {
 
 	var req UserRequest
 	if err := c.BindJSON(&req); err != nil {
-		log.Println(err)
+		log.Printf("error parsing request: %v", err)
 		c.JSON(http.StatusBadRequest, badRequest)
 		return
 	}
@@ -148,7 +161,7 @@ func (s *Server) loginHandler(c *gin.Context) {
 	}
 
 	token, err := generateJWT(s.secret, LoggedInUser{
-		Id:       user.ID,
+		ID:       user.ID,
 		Username: user.Username,
 	})
 	if err != nil {
@@ -157,5 +170,5 @@ func (s *Server) loginHandler(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, token)
+	c.JSON(http.StatusOK, Token{token})
 }

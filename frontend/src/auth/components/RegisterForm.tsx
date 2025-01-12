@@ -1,14 +1,14 @@
 import { createSignal } from "solid-js";
-import styles from "./RegisterForm.module.css";
+import styles from "./form.module.css";
 
-import { validateInput } from "../validations";
-import { UserCreds } from "../auth/types";
+import { validateInput } from "../../validations";
+import { UserCreds } from "../types";
 
 export type RegisterFormProps = {
-  handleRegister: (details: UserCreds) => void;
+  handleRegister: (creds: UserCreds) => void;
 };
 
-function RegisterForm({ handleRegister }: RegisterFormProps) {
+export default function RegisterForm({ handleRegister }: RegisterFormProps) {
   const [username, setUsername] = createSignal("");
   const [password, setPassword] = createSignal("");
   const [confirmPassword, setConfirmPassword] = createSignal("");
@@ -77,5 +77,3 @@ function RegisterForm({ handleRegister }: RegisterFormProps) {
     </form>
   );
 }
-
-export default RegisterForm;

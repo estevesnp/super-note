@@ -62,9 +62,9 @@ tidy:
 build:
 	go build -o=/tmp/bin/${binary_name} ${main_package_path}
 
-## build/full: genereate sqlc and build the application 
-.PHONY: build/full
-build/full:
+## build/gen: genereate sqlc and build the application 
+.PHONY: build/gen
+build/gen:
 	sqlc generate
 	go build -o=/tmp/bin/${binary_name} ${main_package_path}
 

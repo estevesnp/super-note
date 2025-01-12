@@ -1,22 +1,15 @@
-import type { JSX } from "solid-js";
-import styles from "./App.module.css";
+import { JSX } from "solid-js";
+import Header from "./Header";
 
 type AppProps = {
   children?: JSX.Element;
 };
 
-function App({ children }: AppProps) {
+export default function App({ children }: AppProps) {
   return (
     <>
-      <header class={styles.header}>
-        <span>Super Note</span>
-        <a href="/">Home</a>
-        <a href="/register">Register</a>
-      </header>
-
+      <Header />
       {children}
     </>
   );
 }
-
-export default App;

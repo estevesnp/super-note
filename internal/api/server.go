@@ -13,6 +13,13 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
+const conflictError = "23505"
+
+var (
+	internalServerError = gin.H{"error": "Internal Server Error"}
+	badRequest          = gin.H{"error": "Bad Request"}
+)
+
 type Server struct {
 	ctx            context.Context
 	addr           string
@@ -73,13 +80,6 @@ func validateConfig(cfg Config) error {
 	return nil
 }
 
-const conflictError = "23505"
-
-var (
-	internalServerError = gin.H{"error": "Internal Server Error"}
-	badRequest          = gin.H{"error": "Bad Request"}
-)
-
 func (s *Server) Listen() error {
 	return s.router.Run(s.addr)
 }
@@ -107,6 +107,12 @@ func (s *Server) setupEndpoints() error {
 			user := c.GetString("username")
 			c.JSON(http.StatusOK, gin.H{"message": fmt.Sprintf("Hello, %s!\n", user)})
 		})
+	}
+
+	lists := s.router.Group("/lists")
+	lists.Use(s.AuthMiddleware)
+	{
+		lists.POST("/", s.createListHandler)
 	}
 
 	s.router.POST("/login", s.loginHandler)
