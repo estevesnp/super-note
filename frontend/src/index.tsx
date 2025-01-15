@@ -6,6 +6,7 @@ import Register from "./auth/Register";
 import Login from "./auth/Login";
 import Logout from "./auth/Logout";
 import "./index.css";
+import Lists from "./lists/Lists";
 
 const root = document.getElementById("root");
 
@@ -21,6 +22,8 @@ render(
       <Route path="/register" component={Register} />
       <Route path="/login" component={Login} />
       <Route path="/logout" component={Logout} />
+
+      <Route path="/lists" component={Lists} />
     </Router>
   ),
   root,

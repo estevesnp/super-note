@@ -16,7 +16,7 @@ INSERT INTO lists
 (user_id, name, description)
 VALUES
 ($1, $2, $3)
-RETURNING id, user_id, name, description
+RETURNING id, name, description
 `
 
 type CreateListParams struct {
@@ -27,7 +27,6 @@ type CreateListParams struct {
 
 type CreateListRow struct {
 	ID          uuid.UUID `json:"id"`
-	UserID      uuid.UUID `json:"user_id"`
 	Name        string    `json:"name"`
 	Description string    `json:"description"`
 }
@@ -35,57 +34,50 @@ type CreateListRow struct {
 func (q *Queries) CreateList(ctx context.Context, arg CreateListParams) (CreateListRow, error) {
 	row := q.db.QueryRow(ctx, createList, arg.UserID, arg.Name, arg.Description)
 	var i CreateListRow
-	err := row.Scan(
-		&i.ID,
-		&i.UserID,
-		&i.Name,
-		&i.Description,
-	)
+	err := row.Scan(&i.ID, &i.Name, &i.Description)
 	return i, err
 }
 
 const getListById = `-- name: GetListById :one
-SELECT id, user_id, name, description, created_at, updated_at FROM lists
+SELECT id, name, description FROM lists
 WHERE id = $1
 LIMIT 1
 `
 
-func (q *Queries) GetListById(ctx context.Context, id uuid.UUID) (List, error) {
+type GetListByIdRow struct {
+	ID          uuid.UUID `json:"id"`
+	Name        string    `json:"name"`
+	Description string    `json:"description"`
+}
+
+func (q *Queries) GetListById(ctx context.Context, id uuid.UUID) (GetListByIdRow, error) {
 	row := q.db.QueryRow(ctx, getListById, id)
-	var i List
-	err := row.Scan(
-		&i.ID,
-		&i.UserID,
-		&i.Name,
-		&i.Description,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-	)
+	var i GetListByIdRow
+	err := row.Scan(&i.ID, &i.Name, &i.Description)
 	return i, err
 }
 
 const getListsByUser = `-- name: GetListsByUser :many
-SELECT id, user_id, name, description, created_at, updated_at FROM lists
+SELECT id, name, description FROM lists
 WHERE user_id = $1
 `
 
-func (q *Queries) GetListsByUser(ctx context.Context, userID uuid.UUID) ([]List, error) {
+type GetListsByUserRow struct {
+	ID          uuid.UUID `json:"id"`
+	Name        string    `json:"name"`
+	Description string    `json:"description"`
+}
+
+func (q *Queries) GetListsByUser(ctx context.Context, userID uuid.UUID) ([]GetListsByUserRow, error) {
 	rows, err := q.db.Query(ctx, getListsByUser, userID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []List
+	var items []GetListsByUserRow
 	for rows.Next() {
-		var i List
-		if err := rows.Scan(
-			&i.ID,
-			&i.UserID,
-			&i.Name,
-			&i.Description,
-			&i.CreatedAt,
-			&i.UpdatedAt,
-		); err != nil {
+		var i GetListsByUserRow
+		if err := rows.Scan(&i.ID, &i.Name, &i.Description); err != nil {
 			return nil, err
 		}
 		items = append(items, i)

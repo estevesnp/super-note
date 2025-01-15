@@ -9,6 +9,7 @@ export default function Register() {
 
   if (isLoggedIn()) {
     navigate("/");
+    return null;
   }
 
   function handleRegister(creds: UserCreds): void {

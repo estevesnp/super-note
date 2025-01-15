@@ -9,6 +9,7 @@ export default function Login() {
 
   if (isLoggedIn()) {
     navigate("/");
+    return null;
   }
 
   function handleLogin(creds: UserCreds) {
@@ -22,6 +23,7 @@ export default function Login() {
         alert("Unable to login");
       });
   }
+
   return (
     <>
       <h1>Login</h1>

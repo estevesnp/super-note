@@ -112,7 +112,8 @@ func (s *Server) setupEndpoints() error {
 	lists := s.router.Group("/lists")
 	lists.Use(s.AuthMiddleware)
 	{
-		lists.POST("/", s.createListHandler)
+		lists.GET("", s.getListsHandler)
+		lists.POST("", s.createListHandler)
 	}
 
 	s.router.POST("/login", s.loginHandler)
@@ -123,8 +124,12 @@ func (s *Server) setupEndpoints() error {
 	return nil
 }
 
+func (s *Server) repo() *repository.Queries {
+	return repository.New(s.db)
+}
+
 func (s *Server) getUsersHandler(c *gin.Context) {
-	users, err := repository.New(s.db).GetAllUsers(s.ctx)
+	users, err := s.repo().GetAllUsers(s.ctx)
 	if err != nil {
 		log.Printf("error on /users: %v\n", err)
 		c.JSON(http.StatusInternalServerError, internalServerError)

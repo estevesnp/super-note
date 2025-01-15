@@ -1,11 +1,11 @@
 import { createSignal, For } from "solid-js";
 import { getUsers } from "./api/endpoints";
-import { User } from "./api/types";
+import { UserDTO } from "./api/types";
 import styles from "./Home.module.css";
 import { user } from "./auth/authStore";
 
 export default function Home() {
-  const [users, setUsers] = createSignal<Array<User>>([]);
+  const [users, setUsers] = createSignal<Array<UserDTO>>([]);
 
   getUsers()
     .then((apiUsers) => setUsers(apiUsers))

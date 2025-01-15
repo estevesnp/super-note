@@ -1,10 +1,10 @@
 import { createSignal } from "solid-js";
+import { JwtUser } from "./types";
 
-import { User } from "../api/types";
+const [isLoggedIn, setIsLoggedIn] = createSignal(!!getToken());
+const [user, setUser] = createSignal(decodeToken(getToken()));
 
-const [isLoggedIn, setIsLoggedIn] = createSignal(!!localStorage.getItem("jwt"));
-
-const [user, setUser] = createSignal(decodeToken(localStorage.getItem("jwt")));
+export { isLoggedIn, user };
 
 export function login(token: string): void {
   localStorage.setItem("jwt", token);
@@ -18,9 +18,28 @@ export function logout(): void {
   setUser(null);
 }
 
-export { isLoggedIn, user };
+export function validateToken() {
+  if (!isLoggedIn()) {
+    return;
+  }
 
-function decodeToken(token: string | null): User | null {
+  const user = decodeToken(getToken());
+  if (user == null) {
+    logout();
+    return;
+  }
+
+  const currentTime = Math.floor(Date.now() / 1000);
+  if (user.exp < currentTime) {
+    logout();
+  }
+}
+
+export function getToken() {
+  return localStorage.getItem("jwt");
+}
+
+function decodeToken(token: string | null): JwtUser | null {
   if (!token) {
     return null;
   }

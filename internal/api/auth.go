@@ -81,8 +81,6 @@ func (s *Server) AuthMiddleware(c *gin.Context) {
 }
 
 func (s *Server) registerHandler(c *gin.Context) {
-	repo := repository.New(s.db)
-
 	var req UserRequest
 
 	if err := c.BindJSON(&req); err != nil {
@@ -99,7 +97,7 @@ func (s *Server) registerHandler(c *gin.Context) {
 		return
 	}
 
-	user, err := repo.CreateUser(s.ctx, repository.CreateUserParams{
+	user, err := s.repo().CreateUser(s.ctx, repository.CreateUserParams{
 		Username: username,
 		Password: string(pass),
 	})
@@ -128,8 +126,6 @@ func (s *Server) registerHandler(c *gin.Context) {
 }
 
 func (s *Server) loginHandler(c *gin.Context) {
-	repo := repository.New(s.db)
-
 	var req UserRequest
 	if err := c.BindJSON(&req); err != nil {
 		log.Printf("error parsing request: %v", err)
@@ -139,7 +135,7 @@ func (s *Server) loginHandler(c *gin.Context) {
 
 	username := strings.TrimSpace(req.Username)
 
-	user, err := repo.GetUserByUsername(s.ctx, username)
+	user, err := s.repo().GetUserByUsername(s.ctx, username)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "No matching user found"})

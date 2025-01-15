@@ -45,7 +45,7 @@ func (s *Server) createListHandler(c *gin.Context) {
 		return
 	}
 
-	list, err := repository.New(s.db).CreateList(s.ctx, repository.CreateListParams{
+	list, err := s.repo().CreateList(s.ctx, repository.CreateListParams{
 		UserID:      userID,
 		Name:        req.name,
 		Description: req.description,
@@ -57,4 +57,22 @@ func (s *Server) createListHandler(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, list)
+}
+
+func (s *Server) getListsHandler(c *gin.Context) {
+	userID, err := extractID(c)
+	if err != nil {
+		log.Printf("error extracting id: %v", err)
+		c.JSON(http.StatusInternalServerError, internalServerError)
+		return
+	}
+
+	lists, err := s.repo().GetListsByUser(s.ctx, userID)
+	if err != nil {
+		log.Printf("error extracting id: %v", err)
+		c.JSON(http.StatusInternalServerError, internalServerError)
+		return
+	}
+
+	c.JSON(http.StatusOK, lists)
 }
