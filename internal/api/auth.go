@@ -103,11 +103,11 @@ func (s *Server) registerHandler(c *gin.Context) {
 	})
 	if err != nil {
 		var pgError *pgconn.PgError
-		if !errors.As(err, &pgError) && pgError.Code != conflictError {
+		if errors.As(err, &pgError) && pgError.Code == conflictError {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "user already exists"})
+		} else {
 			log.Printf("error creating user: %v", err)
 			c.JSON(http.StatusInternalServerError, internalServerError)
-		} else {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "user already exists"})
 		}
 		return
 	}
