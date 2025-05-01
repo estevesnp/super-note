@@ -18,7 +18,7 @@ export function validateInput(input: string, min = 1, max = 50): Validation {
   if (input.length > max) {
     return {
       valid: false,
-      error: `too short: max lenght is ${max}, got ${input.length}`,
+      error: `too long: max lenght is ${max}, got ${input.length}`,
     };
   }
 

@@ -75,13 +75,7 @@ async function post(url: string, body: any, auth: boolean = false) {
     opts.headers.Authorization = `Bearer ${getToken()}`;
   }
 
-  const resp = await fetch(url, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(body),
-  });
+  const resp = await fetch(url, opts);
 
   if (resp.status === SC_UNAUTHORIZED) {
     throw new Error("unauthorized");
